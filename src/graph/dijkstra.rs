@@ -8,9 +8,9 @@ impl Graph {
     let mut pq = BinaryHeap::new();
     pq.push(Node{node:s, cost:0});
     while let Some(tp) = pq.pop() {
+      if v[tp.node] != None { continue; }
       v[tp.node] = Some(tp.cost);
       let from = tp.cost;
-      if tp.cost > from {continue;}
 
       for e in self.edge[tp.node].iter() {
         if let Some(to) = v[e.0] {
@@ -35,7 +35,7 @@ struct Node {
 use std::cmp::Ordering;
 impl Ord for Node {
   fn cmp(&self, other: &Self) -> Ordering {
-    other.cost.cmp(&other.cost)
+    other.cost.cmp(&self.cost)
   }
 }
 
