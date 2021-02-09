@@ -12,7 +12,7 @@ impl Graph {
         if let Some(from) = v[tp] {
           queue.pop_front();
           for e in self.edge[tp].iter() {
-            if v[e.0] != None {
+            if v[e.0] == None {
               v[e.0] = Some(from + e.1);
               queue.push_back(e.0);
             }
@@ -32,5 +32,5 @@ fn test() {
   g.add_edge(0, 2, 2);
   g.add_edge(2, 4, 4);
   g.add_edge(2, 1, 3);
-  assert_eq!(g.dfs(0), vec![Some(0), Some(9), Some(2), None, Some(6)]);
+  assert_eq!(g.bfs(0), vec![Some(0), Some(9), Some(2), None, Some(6)]);
 }
