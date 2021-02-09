@@ -11,31 +11,33 @@ impl UnionFindTree {
   }
 
   pub fn is_united(&mut self, l: usize, r: usize) -> bool {
-    self.get_root(l as i32) == self.get_root(r as i32)
+    self.get_root(l) == self.get_root(r)
   }
 
-  fn get_root(&mut self, node: i32) -> usize {
-    let node = node as usize;
+  fn get_root(&mut self, node: usize) -> usize {
     if self.tree[node] < 0 {
       node
     }else{
-      let root = self.get_root(self.tree[node]);
+      let root = self.get_root(self.tree[node] as usize);
       self.tree[node] = root as i32;
       root
     }
   }
 
   pub fn unite(&mut self, l: usize, r: usize) {
-    let l = self.get_root(l as i32);
-    let r = self.get_root(r as i32);
+    let l = self.get_root(l);
+    let r = self.get_root(r);
     if self.is_united(l, r) {return ;}
     if self.tree[l].abs() < self.tree[r].abs() {
-      self.tree[r] += self.tree[l];
-      self.tree[l] = r as i32;
+      self.unite_root(l, r);
     }else{
-      self.tree[l] += self.tree[r];
-      self.tree[r] = l as i32;
+      self.unite_root(r, l);
     }
+  }
+  
+  pub fn unite_root(&mut self, l: usize, r: usize) {
+    self.tree[r] += self.tree[l];
+    self.tree[l] = r as i32;
   }
 
   pub fn get_tree(&self) -> Vec<i32> {
