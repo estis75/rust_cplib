@@ -133,9 +133,9 @@ impl<S, T, U, V, W> LazySegmentTree<S, T, U, V, W>
 
 #[test]
 fn it_works() {
-    use crate::data_structure::LazySegmentTree;
-    
-    let mut ts = LazySegmentTree::new(3, 0, [3,9,2].to_vec(), num::integer::gcd, 0, num::integer::gcd, num::integer::gcd);
-    ts.set_operator(1, 2, 3);
-    assert_eq!(ts.get(0,3), 1);
+  use crate::data_structure::LazySegmentTree;
+  
+  let mut ts = LazySegmentTree::new(3, 0, [3,9,2].to_vec(), num::integer::gcd, 0, num::integer::gcd, num::integer::gcd);
+  ts.set_operator(1, 2, 3);
+  assert_eq!(ts.get(0,3), 1);
 }
