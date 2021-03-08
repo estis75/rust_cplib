@@ -11,3 +11,7 @@
 ## [union_find_tree](./union_find_tree.rs)
 
 unionfind木.  rootのノードにはその木のサイズを負にしたものを乗っけてるけど, これじゃまずいなにかがある？
+
+## [binary_indexed_tree](./binary_indexed_tree.rs)
+
+BIT.  1-indexed.
