@@ -6,8 +6,8 @@ impl<T> Modulo<T>
     T: Integer + Into<i128>  + Into<u128> + Copy
 {
   pub fn set_modulo(modulo: T) -> Modulo<T> {
-    if modulo == T::zero() {
-      panic!("cannot use 0 as modulo")
+    if modulo <= T::zero() {
+      panic!("cannot use 0 or less number as modulo")
     }
 
     let mod_u128: u128 = modulo.into();
