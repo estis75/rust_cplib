@@ -1,16 +1,16 @@
-use super::Modulo;
+use super::{Modulo, ModInt};
 
 use num::integer::Integer;
 impl<T> Modulo<T> 
   where
-    T: Integer + Into<i128>  + Into<u128> + Copy
+    T: Integer + Into<i128> + Copy
 {
   pub fn set_modulo(modulo: T) -> Modulo<T> {
     if modulo <= T::zero() {
       panic!("cannot use 0 or less number as modulo")
     }
 
-    let mod_u128: u128 = modulo.into();
+    let mod_u128: i128 = modulo.into();
     let inv = if mod_u128 <= 10_000_000 {
       let mod_usize: usize = mod_u128 as usize;
       let mut vec = vec![None; mod_usize];
@@ -35,6 +35,50 @@ impl Modulo<u32> {
     self.inv
   }
 }
+
+impl<T> ModInt<'_, T> 
+  where 
+    T: Integer + Into<i128> + std::fmt::Display + Copy
+{
+  pub fn chinese_reduction_theorem(self, other: Self) -> T {
+    use num::integer::gcd;
+    let modulo_gcd = gcd(*self.modulo, *other.modulo);
+    let number_diff = self.number - other.number;
+    if number_diff % modulo_gcd != T::zero() {
+      panic!("no such number: x = {} mod {} and = {} mod {}", self.number, self.modulo, other.number, other.modulo)
+    }else{
+      let ret = ModInt::extended_euclidean_algorithm(*self.modulo, *other.modulo);
+      let product_modulo = *self.modulo * *other.modulo;
+
+      let new_modulo = product_modulo / modulo_gcd;
+
+      ((self.number + *self.modulo * number_diff / modulo_gcd * ret.0) % new_modulo + new_modulo) % new_modulo
+    }
+  }
+}
+
+impl<T> ModInt<'_, T> 
+  where 
+    T: Integer + Into<i128> + std::fmt::Display + Copy
+{
+  /// 負の値で帰ってくるのって嫌な気持ちになるので賢くしてほしいね
+  pub fn extended_euclidean_algorithm(l: T, r: T) -> (T, T) {
+    if r > l {
+      ModInt::extended_euclidean_algorithm(r, l)
+    }else{
+      if r == T::zero() {
+        (T::one(), T::zero())
+      }else{
+        let ret = ModInt::extended_euclidean_algorithm(r, l%r);
+        (ret.1, ret.0 - l/r*ret.1)
+      }
+    }
+  }
+}
+
+
+
+
 
 #[test]
 fn test_setup_and_convert() {
@@ -69,4 +113,23 @@ fn test_arithmetic_operations() {
   assert_eq!(c, 4);
   let c: u32 = (c3 / c4).into();
   assert_eq!(c, 7);
+}
+
+#[test]
+fn test_exteuc() {
+  assert_eq!(ModInt::extended_euclidean_algorithm(1,0), (1, 0));
+  assert_eq!(ModInt::extended_euclidean_algorithm(2,1), (0, 1));
+  assert_eq!(ModInt::extended_euclidean_algorithm(3,2), (1, -1));
+
+  assert_eq!(ModInt::extended_euclidean_algorithm(57, 13), (-5, 22))
+}
+
+#[test]
+fn test_crt() {
+  let l = Modulo::set_modulo(15);
+  let r = Modulo::set_modulo(10);
+  
+  let ln = l.new(4);
+  let rn = r.new(9);
+  assert_eq!(ln.chinese_reduction_theorem(rn), 19);
 }
